@@ -18,6 +18,7 @@ let loginMarker = false;
 let loginTime = null;
 let logoutTime = null;
 let device = null;
+let motd = 'Sample message of the day';
 
 app.post('/auth/login', (req, res)=>{
   const { username, password } = req.body;
@@ -52,17 +53,18 @@ app.post('/auth/login', (req, res)=>{
   console.log(device, token);
 
   res.json({
-    language: 'English',
+    languageId: 1,
     token,
     streamUrl,
-    username
+    username,
+    motd
   });
   
 });
 
 app.get('/motd', (req, res)=>{
   res.json({
-    data: "Sample message of the day"
+    motd
   })
 });
 
