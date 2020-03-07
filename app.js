@@ -2,12 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const logger = require('morgan');
 const app = express();
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(logger('tiny'));
 
 app.get('/', (req,res)=>{
   res.json('hello world')
@@ -19,6 +21,7 @@ let loginTime = null;
 let logoutTime = null;
 let device = null;
 let motd = 'Sample message of the day';
+let languageId = 2;
 
 app.post('/auth/login', (req, res)=>{
   const { username, password } = req.body;
@@ -53,7 +56,7 @@ app.post('/auth/login', (req, res)=>{
   console.log(device, token);
 
   res.json({
-    languageId: 1,
+    languageId,
     token,
     streamUrl,
     username,
@@ -73,6 +76,33 @@ app.get('/api/logout', (req, res)=>{
   res.json('success')
 });
 
+app.get('/api/language/:id', (req, res)=>{
+  languageId = req.params.id;
+  res.json({
+    message: 'success'
+  })
+})
+
+app.get('/api/language', (req, res)=>{
+  res.json({
+    data: [{
+      id: 1,
+      language: 'English',
+      streamUrl,
+      motd
+    },{
+      id: 2,
+      language: 'Chinese',
+      streamUrl,
+      motd
+    },{
+      id: 3,
+      language: 'Japanese',
+      streamUrl,
+      motd
+    }]
+  })
+});
 
 
 app.listen(4000, ()=>console.log('listening'));
