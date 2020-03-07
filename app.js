@@ -24,7 +24,7 @@ app.post('/auth/login', (req, res)=>{
   console.log(username, password);
   if(username !== 'admin'){
     return res.status(401).json({
-      message: 'username name not found, please contact your local sales office'
+      message: 'username not found, please contact your local sales office'
     });
   }
   if(password !== 'password'){
@@ -54,10 +54,23 @@ app.post('/auth/login', (req, res)=>{
   res.json({
     language: 'English',
     token,
-    streamUrl
+    streamUrl,
+    username
   });
   
-})
+});
+
+app.get('/motd', (req, res)=>{
+  res.json({
+    data: "Sample message of the day"
+  })
+});
+
+app.get('/api/logout', (req, res)=>{
+ loginMarker = false;
+  res.json('success')
+});
+
 
 
 app.listen(4000, ()=>console.log('listening'));
