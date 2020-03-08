@@ -20,6 +20,7 @@ const streamUrl2 = 'https://d31pknft723cjz.cloudfront.net/novacast_live/ngrp:nov
 let loginMarker = false;
 let loginTime = null;
 let logoutTime = null;
+let lastActive = null;
 let device = null;
 let motd = 'Sample message of the day';
 let languageId = 2;
@@ -27,7 +28,7 @@ let languageId = 2;
 app.use('/api', (req,res,next)=>{
   const authToken = req.headers['x-auth-token'];
   const decoded = jwt.verify(authToken, 'secretKey');
-  if(decoded.expires < Date.now())
+  if(!loginMarker || decoded.expires < Date.now())
     return res.status(401).json({
       message: 'Not Logged in'
     })
@@ -56,6 +57,7 @@ app.post('/auth/login', (req, res)=>{
   loginMarker = true;
   loginTime = Date.now();
   logoutTime = Date.now();
+  lastActive = Date.now();
   device = req.headers['user-agent'];
 
   const token = jwt.sign({
@@ -86,7 +88,12 @@ app.get('/motd', (req, res)=>{
 
 app.get('/api/logout', (req, res)=>{
  loginMarker = false;
-  res.json('success')
+ res.json('success')
+});
+
+app.get('/api/keepalive', (req, res)=>{
+  lastActive = Date.now();
+  res.json('success');
 });
 
 app.get('/api/language/:id', (req, res)=>{
@@ -116,6 +123,16 @@ app.get('/api/language', (req, res)=>{
     }]
   })
 });
+
+
+setInterval(()=>{
+  const diff = Date.now() - lastActive;
+  console.log(diff, loginMarker)
+  if(diff > 10000 && loginMarker) {
+    logoutTime = lastActive;
+    loginMarker = false;
+  }
+}, 5000);
 
 
 app.listen(4000, ()=>console.log('listening'));
