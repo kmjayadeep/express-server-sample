@@ -16,6 +16,7 @@ app.get('/', (req,res)=>{
 })
 
 const streamUrl = 'https://d31pknft723cjz.cloudfront.net/novacast_live/ngrp:nova_test2_all/playlist.m3u8';
+const streamUrl2 = 'https://d31pknft723cjz.cloudfront.net/novacast_live/ngrp:nova_test_all/playlist.m3u8';
 let loginMarker = false;
 let loginTime = null;
 let logoutTime = null;
@@ -66,6 +67,7 @@ app.post('/auth/login', (req, res)=>{
 });
 
 app.get('/motd', (req, res)=>{
+  console.log(motd)
   res.json({
     motd
   })
@@ -93,8 +95,8 @@ app.get('/api/language', (req, res)=>{
     },{
       id: 2,
       language: 'Chinese',
-      streamUrl,
-      motd
+      streamUrl : streamUrl2,
+      motd: 'vere sample'
     },{
       id: 3,
       language: 'Japanese',
