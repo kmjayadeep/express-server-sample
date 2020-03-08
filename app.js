@@ -24,6 +24,16 @@ let device = null;
 let motd = 'Sample message of the day';
 let languageId = 2;
 
+app.use('/api', (req,res,next)=>{
+  const authToken = req.headers['x-auth-token'];
+  const decoded = jwt.verify(authToken, 'secretKey');
+  if(decoded.expires < Date.now())
+    return res.status(401).json({
+      message: 'Not Logged in'
+    })
+  next();
+})
+
 app.post('/auth/login', (req, res)=>{
   const { username, password } = req.body;
   console.log(username, password);
@@ -52,6 +62,7 @@ app.post('/auth/login', (req, res)=>{
     username,
     createdAt: Date.now(),
     expires: Date.now() + 1000*60*60
+    // expires: Date.now() + 5000
   }, 'secretKey');
 
   console.log(device, token);
@@ -59,7 +70,7 @@ app.post('/auth/login', (req, res)=>{
   res.json({
     languageId,
     token,
-    streamUrl,
+    // streamUrl,
     username,
     motd
   });
