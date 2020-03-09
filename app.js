@@ -15,17 +15,18 @@ app.get('/', (req,res)=>{
   res.json('hello world')
 })
 
-const streamUrl = 'https://d31pknft723cjz.cloudfront.net/novacast_live/ngrp:nova_test2_all/playlist.m3u8';
+const streamUrl = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const streamUrl2 = 'https://d31pknft723cjz.cloudfront.net/novacast_live/ngrp:nova_test_all/playlist.m3u8';
 let loginMarker = false;
 let loginTime = null;
 let logoutTime = null;
 let lastActive = null;
 let device = null;
-let motd = 'Sample message of the day';
+let motd = 'Temporibus repellendus doloribus similique et. Est culpa assumenda qui expedita sunt tempore neque. Ut saepe accusamus rem. Architecto id sequi consequuntur minima. Voluptas omnis in consequatur tempora commodi nisi quia. Omnis sunt dolorum quia. Quis quia aut laboriosam consequatur aut qui. Itaque recusandae doloremque minima';
+
 let languageId = 2;
 
-app.use('/api', (req,res,next)=>{
+const auth = (req,res,next)=>{
   const authToken = req.headers['x-auth-token'];
   const decoded = jwt.verify(authToken, 'secretKey');
   if(!loginMarker || decoded.expires < Date.now())
@@ -33,9 +34,9 @@ app.use('/api', (req,res,next)=>{
       message: 'Not Logged in'
     })
   next();
-})
+};
 
-app.post('/auth/login', (req, res)=>{
+app.post('/api/login', (req, res)=>{
   const { username, password } = req.body;
   console.log(username, password);
   if(username !== 'admin'){
@@ -72,14 +73,14 @@ app.post('/auth/login', (req, res)=>{
   res.json({
     languageId,
     token,
-    // streamUrl,
+    streamUrl,
     username,
     motd
   });
   
 });
 
-app.get('/motd', (req, res)=>{
+app.get('/api/motd', (req, res)=>{
   console.log(motd)
   res.json({
     motd
@@ -104,24 +105,35 @@ app.get('/api/language/:id', (req, res)=>{
 })
 
 app.get('/api/language', (req, res)=>{
+  const data = [{
+    id: 1,
+    language: 'English',
+    streamUrl,
+    motd
+  },{
+    id: 2,
+    language: 'Chinese',
+    streamUrl : streamUrl2,
+    motd: 'vere sample'
+  },{
+    id: 3,
+    language: 'Japanese',
+    streamUrl,
+    motd
+  }]
+
   res.json({
-    data: [{
-      id: 1,
-      language: 'English',
-      streamUrl,
-      motd
-    },{
-      id: 2,
-      language: 'Chinese',
-      streamUrl : streamUrl2,
-      motd: 'vere sample'
-    },{
-      id: 3,
-      language: 'Japanese',
-      streamUrl,
-      motd
-    }]
+    data
   })
+
+  // res.json({
+    // data: [{
+      // id: 4,
+      // language: 'Malayalam',
+      // streamUrl,
+      // motd,
+    // },...data, ...data, ...data, ...data, ...data, ...data,...data,...data]
+  // })
 });
 
 
