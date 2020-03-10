@@ -27,7 +27,7 @@ let motd = 'Temporibus repellendus doloribus similique et. Est culpa assumenda q
 let languageId = 2;
 
 const auth = (req,res,next)=>{
-  const authToken = req.headers['x-auth-token'];
+  const authToken = req.headers['authorization'].split(' ')[1];
   const decoded = jwt.verify(authToken, 'secretKey');
   if(!loginMarker || decoded.expires < Date.now())
     return res.status(401).json({
@@ -92,7 +92,7 @@ app.get('/api/logout', (req, res)=>{
  res.json('success')
 });
 
-app.get('/api/keepalive', (req, res)=>{
+app.get('/api/keepalive', auth, (req, res)=>{
   lastActive = Date.now();
   res.json('success');
 });
